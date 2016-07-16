@@ -18,26 +18,6 @@ import java.nio.file.Paths;
 public class Main {
 
     public static void main(String[] args) {
-
-        try {
-            System.out.println("Configuring application UI look and feel...");
-
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            System.out.println("Could not set look and feel for cross platform");
-        }
-
-        final SpringApplication springApplication = new SpringApplication(Main.class);
-        springApplication.addListeners(new ApplicationPidFileWriter(), new EmbeddedServerPortFileWriter());
-        springApplication.run(args);
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                Path path = Paths.get(System.getProperty("user.dir"));
-                Runtime.getRuntime().exec(String.format("%s\\stop.bat", path.getParent().toString()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }));
+        new SpringApplication(Main.class).run(args);
     }
 }
