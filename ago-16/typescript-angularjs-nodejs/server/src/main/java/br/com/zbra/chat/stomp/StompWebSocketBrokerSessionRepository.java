@@ -1,4 +1,4 @@
-package br.com.zbra.chat;
+package br.com.zbra.chat.stomp;
 
 import org.springframework.stereotype.Component;
 

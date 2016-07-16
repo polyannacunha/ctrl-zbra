@@ -1,6 +1,6 @@
-package br.com.zbra.chat;
+package br.com.zbra.chat.stomp;
 
-public interface WebSocketBrokerSessionRepository<T extends WebSocketBrokerSession> {
+interface WebSocketBrokerSessionRepository<T extends WebSocketBrokerSession> {
 
     T findBySessionId(String sessionId);
 

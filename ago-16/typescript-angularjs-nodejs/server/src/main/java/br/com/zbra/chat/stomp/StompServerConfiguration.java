@@ -1,4 +1,4 @@
-package br.com.zbra.chat;
+package br.com.zbra.chat.stomp;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;

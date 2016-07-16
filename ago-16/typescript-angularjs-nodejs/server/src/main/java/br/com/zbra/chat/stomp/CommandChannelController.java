@@ -1,4 +1,4 @@
-package br.com.zbra.chat;
+package br.com.zbra.chat.stomp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
