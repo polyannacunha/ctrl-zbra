@@ -1,6 +1,6 @@
 package br.com.zbra.chat.model;
 
-class User {
+public class User {
     private String username;
     private String email;
 
