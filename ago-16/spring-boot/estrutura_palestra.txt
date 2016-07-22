@@ -1,0 +1,48 @@
+
+Palestra SpringBoot
+
+O que é 
+	- Visão geral
+Que problemas resolve / Porque usar
+	- Mostrar facilidade de inicio
+	- https://start.spring.io/
+	- a necessidade de um melhor bootstrap
+	- O que difere do spring framework convensional
+	- runnable jar (fatjar) mas também suporta o tradicional deployar em application container
+Como funciona
+	- auto configuration
+		- disable specific auto configuration * lembrar de mencionar
+		- troubleshoot auto configuration
+	- classpath mapping de properties/xml
+	- maven e gradle plugin
+Algumas features
+	- dependencies starter (mais famosas)
+		- embbeded servlet container
+		- production ready features - endpoints de erro, healthcheck, metricas de aplicação e jvm, jmx via http
+		- thymeleaf
+		- jax-rs / jersey
+		- jackson mapping
+		- logger
+		- security
+		- filas
+	- profiling
+	- comandos básicos (como startar)
+	- falar rapido sobre spring boot cli
+	- buildar e deployar
+Conclusões
+	- Usar spring boot em produção é bom ou não?
+	- quem está usando?
+	- Eles estão passando por algum problema?
+	- Como o spring boot está se consolidando
+	- Bom suporte de comunidade
+	- Concorrente (Dropwizard)
+	- Concorrente (Play framework)
+Demo
+	- fazer um projeto muito rapido e mostrar funcionando
+	- integrar com stomp
+		- Se necessario, ter já pronto um outro projeto que é a integração do webchat e só mostrar as diferenças
+	- fazer demo com o projeto do pessoal
+QA
+	- espaço para perguntas
+
+

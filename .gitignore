@@ -4,3 +4,17 @@ ago-16/typescript-angularjs-nodejs/server/target/
 *.iml
 *.pid
 *.port
+
+# Java
+*.jar
+*.original
+*.class
+
+# Intellij
+.idea/
+*.iws
+*.iml
+
+# Gradle
+.gradle
+build/
