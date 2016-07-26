@@ -18,15 +18,11 @@
             </md-list-item>
         </md-content>
     </md-sidenav>
-    <md-content layout="column" flex>
+    <div layout="column" flex>
         <md-toolbar>
             <h1 class="md-toolbar-tools">{{ ctrl.selectedRoom.name }}Peteca</h1>
         </md-toolbar>
-        <md-content flex layout-padding>
-            <loading-overlay>
-                <chat-room-window room="ctrl.selectedRoom"></chat-room-window>
-            </loading-overlay>
-        </md-content>
-    </md-content>
+        <chat-room-window room="ctrl.selectedRoom"></chat-room-window>
+    </div>
 </div>
 
