@@ -4,6 +4,8 @@ app/**/*.js.map
 !app/assets/locale/*.js
 app/assets/css/**/*
 app/assets/bower_components/**/*
+config/**/*.js
+config/**/*.js.map
 node_modules/**/*
 typings/**/*
 
