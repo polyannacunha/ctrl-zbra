@@ -1,32 +1,40 @@
 package br.com.zbra.springboot.controller;
 
+import br.com.zbra.springboot.model.Message;
 import br.com.zbra.springboot.model.Room;
+import br.com.zbra.springboot.model.User;
+import br.com.zbra.springboot.service.RoomService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 public class ChatController {
 
-    @MessageMapping("/list/rooms")
+    @Autowired
+    private RoomService roomService;
+
+    @MessageMapping("/list")
     @SendTo("/queue/list")
     public List<Room> list() {
-        // TODO List rooms
-        return new ArrayList<>();
+        return roomService.listRooms();
     }
 
     @MessageMapping("/join/{roomId}")
     @SendTo("/queue/room/{roomId}")
-    public void join() {
-        // TODO Join user in room
+    public void join(@DestinationVariable("roomId") Long roomId, @Payload User user) {
+        roomService.addUserToRoom(roomId, user);
     }
 
     @MessageMapping("/messages/{roomId}")
     @SendTo("/queue/messages/{roomId}")
-    public void message() {
-        // TODO Send message in room
+    public void onMessage(@DestinationVariable("roomId") Long roomId,
+                          @Payload Message message) {
+        roomService.addMessagesToRoom(roomId, message);
     }
 }

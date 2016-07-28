@@ -60,6 +60,10 @@ public class Room implements Serializable {
         this.users.add(user);
     }
 
+    public void addMessage(Message message) {
+        this.messages.add(message);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

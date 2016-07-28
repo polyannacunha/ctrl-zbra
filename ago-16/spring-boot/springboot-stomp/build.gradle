@@ -12,6 +12,12 @@ buildscript {
 }
 
 apply plugin: 'java'
+apply plugin: 'spring-boot'
+
+//noinspection GroovyUnusedAssignment
+sourceCompatibility = 1.8
+//noinspection GroovyUnusedAssignment
+targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
@@ -23,9 +29,9 @@ ext {
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web:$springVersion") {
-        exclude module: 'spring-boot-starter-tomcat'
+//        exclude module: 'spring-boot-starter-tomcat'
     }
-    compile("org.springframework.boot:spring-boot-starter-jetty:$springVersion")
+//    compile("org.springframework.boot:spring-boot-starter-jetty:$springVersion")
     compile("org.springframework.boot:spring-boot-starter-websocket:$springVersion")
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
