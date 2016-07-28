@@ -11,7 +11,7 @@ buildscript {
     }
 }
 
-apply plugin: 'java'
+apply plugin: 'application'
 apply plugin: 'spring-boot'
 
 //noinspection GroovyUnusedAssignment
@@ -35,4 +35,11 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-websocket:$springVersion")
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+//noinspection GroovyUnusedAssignment
+mainClassName = "br.com.zbra.springboot.Application"
+
+tasks.withType(Jar) {
+    destinationDir = file('deploy/')
 }
