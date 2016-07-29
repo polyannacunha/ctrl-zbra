@@ -21,6 +21,7 @@ namespace App {
             'ngMessages',
             'ngMaterial',
             'pascalprecht.translate',
+            'ngStomp',
 
             // UI
             'app.ui.components',
@@ -38,7 +39,7 @@ namespace App {
         .run(cache_);
 
     route_.$inject = ['$routeProvider'];
-    function route_($routeProvider: IRouteProvider) {
+    function route_($routeProvider:IRouteProvider) {
         $routeProvider
             .when(Routes.Home.template(), {
                 templateUrl: 'ui/pages/home/home.html',
@@ -51,15 +52,15 @@ namespace App {
     }
 
     translate_.$inject = ['$translateProvider'];
-    function translate_($translateProvider: ITranslateProvider) {
+    function translate_($translateProvider:ITranslateProvider) {
         $translateProvider.useSanitizeValueStrategy('escape');
         $translateProvider.preferredLanguage('en-us');
     }
 
     theme_.$inject = ['$mdThemingProvider'];
-    function theme_($mdThemingProvider: IThemingProvider) {
+    function theme_($mdThemingProvider:IThemingProvider) {
         let customLime = $mdThemingProvider.extendPalette('lime', {
-            'A200' : 'dddc00'
+            'A200': 'dddc00'
         });
 
         $mdThemingProvider
@@ -67,17 +68,17 @@ namespace App {
         $mdThemingProvider
             .theme('default')
             .primaryPalette('blue')
-            .accentPalette('customLime', { 'default': 'A200' })
-            .warnPalette('red', { 'default': '500' });
+            .accentPalette('customLime', {'default': 'A200'})
+            .warnPalette('red', {'default': '500'});
     }
 
     icon_.$inject = ['$mdIconProvider'];
-    function icon_($mdIconProvider: IIconProvider) {
+    function icon_($mdIconProvider:IIconProvider) {
         $mdIconProvider.iconSet('core', SVG_ICON_PACK_URL, 24);
     }
 
     cache_.$inject = ['$http', '$templateCache'];
-    function cache_($http: IHttpService, $templateCache: ITemplateCacheService) {
-        $http.get(SVG_ICON_PACK_URL, { cache: $templateCache });
+    function cache_($http:IHttpService, $templateCache:ITemplateCacheService) {
+        $http.get(SVG_ICON_PACK_URL, {cache: $templateCache});
     }
 }

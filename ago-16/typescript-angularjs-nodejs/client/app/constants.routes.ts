@@ -15,7 +15,7 @@ namespace App {
             return '/users/:id';
         }
 
-        public withArguments (id: string): string {
+        public withArguments(id:string):string {
             return `/users/${id}`;
         }
     }

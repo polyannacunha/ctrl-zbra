@@ -3,5 +3,6 @@
 namespace Repository {
     angular
         .module('app.repository', [])
-        .service('MessageRepository', Repository.MessageRepository);
+        .service('MessageRepository', Repository.MessageRepository)
+        .service('ChatRoomRepository', Repository.ChatRoomRepository);
 }

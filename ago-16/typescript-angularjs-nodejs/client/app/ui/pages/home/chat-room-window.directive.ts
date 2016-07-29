@@ -6,7 +6,7 @@ namespace UI.Pages.Home {
     import Message = Model.Message;
     import ChatRoom = Model.ChatRoom;
     import NotificationMediator = UI.Mediators.NotificationMediator;
-    
+
     export class ChatRoomWindow implements IDirective {
         restrict = 'E';
         scope = true;
@@ -30,18 +30,19 @@ namespace UI.Pages.Home {
     }
 
     class Controller {
-        static $inject = [ '$scope', 'MessageRepository', 'NotificationMediator' ];
+        static $inject = ['$scope', 'MessageRepository', 'NotificationMediator'];
 
-        private room: ChatRoom;
-        private messages: Message[] = [];
-        private loading: boolean;
+        private room:ChatRoom;
+        private messages:Message[] = [];
+        private loading:boolean;
 
-        constructor(
-            private scope:IScope,
-            private messageRepository: MessageRepository,
-            private notificationMediator: NotificationMediator) {
+        constructor(private scope:IScope,
+                    private messageRepository:MessageRepository,
+                    private notificationMediator:NotificationMediator) {
 
-            scope.$watch("chatRoomCtrl.room", (n: ChatRoom) => {
+            scope.$watch("chatRoomCtrl.room", (n:ChatRoom) => {
+                if (n == null) return;
+
                 this.messages = [];
                 this.loading = true;
                 messageRepository.getMessagesByRoom(n.id)

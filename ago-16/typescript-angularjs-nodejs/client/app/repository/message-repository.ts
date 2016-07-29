@@ -7,21 +7,24 @@ namespace Repository {
     import Message = Model.Message;
     import Dictionary = _.Dictionary;
     import ChatRoom = Model.ChatRoom;
+    import IRootScopeService = angular.IRootScopeService;
 
     export class MessageRepository {
-        static $inject = ['$q', '$http'];
+        static $inject = ['$q', '$http', '$rootScope'];
 
-        private messagesByChatRoom: { [id: string] : Message[]; } = {};
+        private messagesByChatRoom:{ [id:string]:Message[]; } = {};
 
         constructor(private $q:IQService,
-                    private $http:IHttpService) {
+                    private $http:IHttpService,
+                    private $rootScope:IRootScopeService) {
         }
 
-        public addMessageToRoom(message: Message): IPromise<any> {
+        public addMessageToRoom(message:Message):IPromise<any> {
             var deferred = this.$q.defer();
 
             if (message != null) {
                 this.messagesByChatRoom[message.room.id].push(message);
+                this.$rootScope.$broadcast('new-message', message);
                 deferred.resolve();
             } else {
                 deferred.reject("Message cannot be null")
@@ -30,7 +33,7 @@ namespace Repository {
             return deferred.promise;
         }
 
-        public getMessagesByRoom(roomId: string):IPromise<Message[]> {
+        public getMessagesByRoom(roomId:string):IPromise<Message[]> {
             var deferred = this.$q.defer<Message[]>();
 
             if (roomId != null) {

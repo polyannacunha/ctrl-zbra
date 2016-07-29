@@ -1,5 +1,5 @@
 (function() {
-    var ws = new SockJS('http://192.168.10.115:8080/stomp');
+    var ws = new SockJS('http://localhost:8080/stomp');
     var stompClient = Stomp.over(ws);
     stompClient.heartbeat.outgoing = 0;
     stompClient.heartbeat.incoming = 0;
