@@ -18,6 +18,7 @@ namespace UI.Components {
             visible: '='
         };
         transclude = true;
-        controller = () => {};
+        controller = () => {
+        };
     }
 }
