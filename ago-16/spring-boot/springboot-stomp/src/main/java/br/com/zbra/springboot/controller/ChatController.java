@@ -12,6 +12,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class ChatController {
@@ -19,16 +20,22 @@ public class ChatController {
     @Autowired
     private RoomService roomService;
 
-    @MessageMapping("/list")
-    @SendTo("/queue/list")
+    @MessageMapping("/list/rooms")
+    @SendTo("/queue/rooms")
     public List<Room> list() {
         return roomService.listRooms();
     }
 
     @MessageMapping("/join/{roomId}")
     @SendTo("/queue/room/{roomId}")
-    public void join(@DestinationVariable("roomId") Long roomId, @Payload User user) {
-        roomService.addUserToRoom(roomId, user);
+    public Room join(@DestinationVariable("roomId") Long roomId, @Payload User user) {
+        Optional<Room> room = roomService.addUserToRoom(roomId, user);
+
+        if (room.isPresent()) {
+            return room.get();
+        }
+
+        return null;
     }
 
     @MessageMapping("/messages/{roomId}")

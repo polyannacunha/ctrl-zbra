@@ -28,7 +28,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void addUserToRoom(Long roomId, User user) throws IllegalArgumentException {
+    public Optional<Room> addUserToRoom(Long roomId, User user) throws IllegalArgumentException {
         if (user != null) {
             Optional<Room> room = this.findRoom(roomId);
 
@@ -36,6 +36,8 @@ public class RoomServiceImpl implements RoomService {
                 room.get().addUser(user);
 
                 roomRepository.save(room.get());
+
+                return room;
             }
 
             throw new IllegalArgumentException("This room does not exist");

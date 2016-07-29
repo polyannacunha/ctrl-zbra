@@ -14,7 +14,6 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/queue", "/topic");
         config.setApplicationDestinationPrefixes("/zbra-chat");
-        config.setUserDestinationPrefix("/user");
     }
 
     @Override
