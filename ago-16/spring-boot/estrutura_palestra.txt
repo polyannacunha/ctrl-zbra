@@ -3,11 +3,23 @@ Palestra SpringBoot
 
 O que é 
 	- Visão geral
+		- Quando surgiu 
+			- Começou no final de 2013
+			- 1.0 começo de 2014
+		- O que é
+			- Meta framework (ou framework de frameworks), que ajuda à iniciar as aplicações sem se preocupar com muitas configurações (principalmente xml)
+			- Provê uma maneira muito mais rápida de começar a construir aplicações runnable java baseadas em spring. 
+			- Provê várias features não funcionais e production ready que são muito usadas, como os embbeded servers, metrics, health, security.
+			- Automaticamente configura as outras dependencias do spring
+			- Vários starter dependencies pras bibliotecas mais famosas
+			- Não tem necessidade de xml
+			- externalização de configurações (app.properties)
+				Tem a opção de usar yml (app.yml)
 Que problemas resolve / Porque usar
 	- Mostrar facilidade de inicio
 	- https://start.spring.io/
 	- a necessidade de um melhor bootstrap
-	- O que difere do spring framework convensional
+	- O que difere do spring framework convencional
 	- runnable jar (fatjar) mas também suporta o tradicional deployar em application container
 Como funciona
 	- auto configuration
@@ -15,6 +27,7 @@ Como funciona
 		- troubleshoot auto configuration
 	- classpath mapping de properties/xml
 	- maven e gradle plugin
+	- Últimas versões é java 7+, porém é possível utilizar com java 6 com algumas configurações
 Algumas features
 	- dependencies starter (mais famosas)
 		- embbeded servlet container
@@ -45,4 +58,11 @@ Demo
 QA
 	- espaço para perguntas
 
+Verificar 
 
+Create non web application
+Troubleshoot auto-configuration
+https://www.quora.com/What-is-the-difference-between-Spring-Boot-and-the-Spring-framework
+http://blog.takipi.com/java-bootstrap-dropwizard-vs-spring-boot/
+http://384uqqh5pka2ma24ild282mv.wpengine.netdna-cdn.com/wp-content/uploads/2015/03/dropwizard.vs_.spring.boot_.libraries1.jpg
+http://www.slideshare.net/sdeeg/spring-boot
