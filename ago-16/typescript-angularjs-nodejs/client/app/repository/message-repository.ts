@@ -8,9 +8,11 @@ namespace Repository {
     import Dictionary = _.Dictionary;
     import ChatRoom = Model.ChatRoom;
     import IRootScopeService = angular.IRootScopeService;
+    import IScope = angular.IScope;
 
     export class MessageRepository {
         static $inject = ['$q', '$http', '$rootScope'];
+        static onMessagesUpdatedEvent = "sessionService.onNewMessage";
 
         private messagesByChatRoom:{ [id:string]:Message[]; } = {};
 
@@ -24,7 +26,7 @@ namespace Repository {
 
             if (message != null) {
                 this.messagesByChatRoom[message.room.id].push(message);
-                this.$rootScope.$broadcast('new-message', message);
+                this.$rootScope.$broadcast(MessageRepository.onMessagesUpdatedEvent, message);
                 deferred.resolve();
             } else {
                 deferred.reject("Message cannot be null")
@@ -43,6 +45,12 @@ namespace Repository {
             }
 
             return deferred.promise;
+        }
+
+        public addOnMessageUpdatedListener(scope: IScope, delegate: (newMessage: Message) => void) {
+            scope.$on(MessageRepository.onMessagesUpdatedEvent, (event, message: Message) => {
+                delegate(message);
+            });
         }
     }
 }

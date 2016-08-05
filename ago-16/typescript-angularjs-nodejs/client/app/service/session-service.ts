@@ -8,15 +8,18 @@ namespace Services {
     import ChatRoomRepository = Repository.ChatRoomRepository;
     import ChatRoom = Model.ChatRoom;
     import Message = Model.Message;
+    import IRootScopeService = angular.IRootScopeService;
+    import IScope = angular.IScope;
 
     export class SessionService {
-        static $inject = ['$q', '$stomp', 'MessageRepository', 'ChatRoomRepository'];
+        static $inject = ['$q', '$stomp', '$rootScope', 'MessageRepository', 'ChatRoomRepository'];
 
         public user:User;
 
         constructor(
             private $q:IQService,
             private $stomp:ngStomp,
+            private $rootScope:IRootScopeService,
             private messageRepository:MessageRepository,
             private chatRoomRepository:ChatRoomRepository) {
         }
@@ -52,16 +55,18 @@ namespace Services {
                             this.$stomp.send(`/zbra-chat/join/${room.id}`, { username: user.id, email: user.email }, {});
                             this.$stomp.subscribe(`/user/queue/room/${room.id}`, (payload) => {
                                 let messages = <Array<any>>JSON.parse(payload).messages;
-                                for (let rawMessage of messages) {
-                                    let message = new Message();
-                                    message.text = rawMessage.text;
-                                    message.room = room;
-                                    message.user = new User();
-                                    message.user.id = rawMessage.user.username;
-                                    message.user.name = rawMessage.user.username;
-                                    message.user.email = rawMessage.user.email;
+                                if (messages.length > 0) {
+                                    for (let rawMessage of messages) {
+                                        let message = new Message();
+                                        message.text = rawMessage.text;
+                                        message.room = room;
+                                        message.user = new User();
+                                        message.user.id = rawMessage.user.username;
+                                        message.user.name = rawMessage.user.username;
+                                        message.user.email = rawMessage.user.email;
 
-                                    this.messageRepository.addMessageToRoom(message);
+                                        this.messageRepository.addMessageToRoom(message);
+                                    }
                                 }
                             });
 
