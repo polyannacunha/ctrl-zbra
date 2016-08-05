@@ -25,7 +25,7 @@ namespace UI.Pages.Home {
         controller = Controller;
         controllerAs = 'chatRoomCtrl';
         bindToController = {
-            room: '&'
+            room: '='
         };
     }
 
@@ -36,11 +36,17 @@ namespace UI.Pages.Home {
         private messages:Message[] = [];
         private loading:boolean;
 
-        constructor(private scope:IScope,
+        constructor(private $scope:IScope,
                     private messageRepository:MessageRepository,
                     private notificationMediator:NotificationMediator) {
 
-            scope.$watch("chatRoomCtrl.room", (n:ChatRoom) => {
+            this.messageRepository.addOnMessageUpdatedListener($scope, (message: Message) => {
+                if (message.room.id == this.room.id) {
+                    this.messages.push(message);
+                }
+            });
+
+            $scope.$watch("chatRoomCtrl.room", (n:ChatRoom) => {
                 if (n == null) return;
 
                 this.messages = [];
