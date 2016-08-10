@@ -26,7 +26,6 @@ public class ChatController {
     }
 
     @MessageMapping("/join/{roomId}")
-//    @SendTo("/queue/room/{roomId}")
     public void join(@DestinationVariable("roomId") Long roomId, @Payload User user) {
         roomService.addUserToRoom(roomId, user);
     }
