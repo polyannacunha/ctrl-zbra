@@ -5,7 +5,7 @@
     stompClient.heartbeat.incoming = 0;
     
     stompClient.connect({}, function(frame) {
-        stompClient.subscribe('/queue/rooms', function(message) {
+        stompClient.subscribe('/user/queue/rooms', function(message) {
             var rooms = JSON.parse(message.body);
             var room = rooms[0];
 
