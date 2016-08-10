@@ -22,8 +22,8 @@ public class RoomRepositoryImpl implements RoomRepository {
 
     private void seedRooms() {
         dummyRooms.add(new Room(1L, "Gaming"));
-        dummyRooms.add(new Room(1L, "General"));
-        dummyRooms.add(new Room(1L, "Development"));
+        dummyRooms.add(new Room(2L, "General"));
+        dummyRooms.add(new Room(3L, "Development"));
     }
 
     @Override
