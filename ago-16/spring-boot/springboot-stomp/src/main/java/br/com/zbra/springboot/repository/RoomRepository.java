@@ -23,16 +23,16 @@ public interface RoomRepository {
     List<Room> findAll();
 
     /**
-     *
-     * @param roomId
-     * @param message
+     * Add an message to an room.
+     * @param roomId Room id.
+     * @param message Message sent to room.
      */
     void newMessage(Long roomId, Message message);
 
     /**
-     *
-     * @param roomId
-     * @param user
+     * Add a user to an room.
+     * @param roomId Room id.
+     * @param user User joined to room.
      */
     void addUser(Long roomId, User user);
 }

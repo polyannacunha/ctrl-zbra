@@ -9,6 +9,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
@@ -20,13 +21,12 @@ public class ChatController {
     private RoomService roomService;
 
     @MessageMapping("/list/rooms")
-    @SendTo("/queue/rooms")
+    @SendToUser("/queue/rooms")
     public List<Room> list() {
         return roomService.listRooms();
     }
 
     @MessageMapping("/join/{roomId}")
-//    @SendTo("/queue/room/{roomId}")
     public void join(@DestinationVariable("roomId") Long roomId, @Payload User user) {
         roomService.addUserToRoom(roomId, user);
     }
