@@ -35,11 +35,11 @@ namespace UI.Pages.Home {
                             <md-dialog-content>
                                 <md-input-container>
                                     <label>Name</label>
-                                    <input ng-model="name">
+                                    <input ng-model="dialogCtrl.name">
                                 </md-input-container>
                                 <md-input-container>
                                     <label>Email</label>
-                                    <input ng-model="email" type="email">
+                                    <input ng-model="dialogCtrl.email">
                                 </md-input-container>
                             </md-dialog-content>
                             <md-dialog-actions layout="row">

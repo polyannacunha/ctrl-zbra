@@ -28,20 +28,20 @@ namespace Services {
             let deferred = this.$q.defer();
 
             this.$stomp
-                .connect('http://localhost:8080')
+                .connect('http://localhost:8080/stomp')
                 .then((frame) => {
 
-                    this.$stomp.subscribe('/user/queue/list', (payload) => {
-                        let raw = <Array<any>> JSON.parse(payload);
-                        let rooms = raw.map(v => {
+                    this.$stomp.send(`/zbra-chat/list/rooms`, null,  {});
+                    this.$stomp.subscribe('/queue/rooms', (payload:any) => {
+                        let rooms = payload.map(v => {
                             let room = new ChatRoom();
                             room.id = v.id;
                             room.name = v.name;
                             room.users = [];
                             for (let rawUser of v.users) {
                                 let u = new User();
-                                u.id = rawUser.username;
-                                u.name = rawUser.username;
+                                u.id = rawUser.userName;
+                                u.name = rawUser.userName;
                                 u.email = rawUser.email;
                                 room.users.push(u);
                             }
@@ -52,17 +52,16 @@ namespace Services {
                         for (let room of rooms) {
                             this.chatRoomRepository.add(room);
 
-                            this.$stomp.send(`/zbra-chat/join/${room.id}`, { username: user.id, email: user.email }, {});
-                            this.$stomp.subscribe(`/user/queue/room/${room.id}`, (payload) => {
-                                let messages = <Array<any>>JSON.parse(payload).messages;
+                            this.$stomp.send(`/zbra-chat/join/${room.id}`, { userName: user.name, email: user.email }, {});
+                            this.$stomp.subscribe(`/queue/room/${room.id}`, (messages:any) => {
                                 if (messages.length > 0) {
                                     for (let rawMessage of messages) {
                                         let message = new Message();
                                         message.text = rawMessage.text;
                                         message.room = room;
                                         message.user = new User();
-                                        message.user.id = rawMessage.user.username;
-                                        message.user.name = rawMessage.user.username;
+                                        message.user.id = rawMessage.user.userName;
+                                        message.user.name = rawMessage.user.userName;
                                         message.user.email = rawMessage.user.email;
 
                                         this.messageRepository.addMessageToRoom(message);
@@ -70,8 +69,7 @@ namespace Services {
                                 }
                             });
 
-                            this.$stomp.subscribe(`/queue/messages/${room.id}`, (payload) => {
-                                let rawMessage = <any>JSON.parse(payload);
+                            this.$stomp.subscribe(`/queue/messages/${room.id}`, (rawMessage:any) => {
                                 let message = new Message();
                                 message.text = rawMessage.text;
                                 message.room = room;
