@@ -10,14 +10,16 @@
             var room = rooms[0];
 
             stompClient.send('/zbra-chat/join/' + room.id, {}, JSON.stringify({ username: 'jdoe', email: 'jdoe@test.com' }));
-            stompClient.subscribe('/queue/room/' + room.id, function(message) {
-                var serverRoom = JSON.parse(message.body);
+
+            var serverRoom = JSON.parse(message.body);
                 var messagePayload = {
                     user: { username: 'jdoe', email: 'jdoe@test.com' },
                     text: 'HALLO THAR! ' + new Date().getTime()
                 };
-                stompClient.send('/zbra-chat/messages/' + room.id, {}, JSON.stringify(messagePayload));
-            });
+            stompClient.send('/zbra-chat/messages/' + room.id, {}, JSON.stringify(messagePayload));
+            //stompClient.subscribe('/queue/room/' + room.id, function(message) {
+                
+            //});
             stompClient.subscribe('/queue/messages/' + room.id, function(message) {
 
             });

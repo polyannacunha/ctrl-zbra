@@ -1,6 +1,8 @@
 package br.com.zbra.springboot.repository.impl;
 
+import br.com.zbra.springboot.model.Message;
 import br.com.zbra.springboot.model.Room;
+import br.com.zbra.springboot.model.User;
 import br.com.zbra.springboot.repository.RoomRepository;
 import org.springframework.stereotype.Repository;
 
@@ -35,8 +37,12 @@ public class RoomRepositoryImpl implements RoomRepository {
     }
 
     @Override
-    public void save(Room room) {
-        this.dummyRooms.removeIf(r -> r.equals(room));
-        this.dummyRooms.add(room);
+    public void newMessage(Long roomId, Message msg) {
+        this.dummyRooms.stream().filter(r -> r.getId().equals(roomId)).forEach(r -> r.addMessage(msg));
+    }
+
+    @Override
+    public void addUser(Long roomId, User user) {
+        this.dummyRooms.stream().filter(r -> r.getId().equals(roomId)).forEach(r -> r.addUser(user));
     }
 }

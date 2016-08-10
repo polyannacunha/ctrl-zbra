@@ -25,10 +25,9 @@ public interface RoomService {
      * Add users to room by given id.
      * @param roomId Room id.
      * @param user User.
-     * @return The Room.
      * @throws IllegalArgumentException If User is null or does not exist room with this id.
      */
-    Optional<Room> addUserToRoom(Long roomId, User user) throws IllegalArgumentException;
+    void addUserToRoom(Long roomId, User user) throws IllegalArgumentException;
 
     /**
      * Add messages to a room.
