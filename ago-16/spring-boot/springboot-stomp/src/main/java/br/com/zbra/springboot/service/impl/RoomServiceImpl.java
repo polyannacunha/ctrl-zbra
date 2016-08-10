@@ -28,23 +28,19 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public Optional<Room> addUserToRoom(Long roomId, User user) throws IllegalArgumentException {
+    public void addUserToRoom(Long roomId, User user) throws IllegalArgumentException {
         if (user != null) {
             Optional<Room> room = this.findRoom(roomId);
 
             if (room.isPresent()) {
-                room.get().addUser(user);
-
-                roomRepository.save(room.get());
-
-                return room;
+                roomRepository.addUser(roomId, user);
+            } else {
+                throw new IllegalArgumentException("This room does not exist");
             }
-
-            throw new IllegalArgumentException("This room does not exist");
+        } else {
+            // TODO Treat this
+            throw new IllegalArgumentException("User cannot be null to join in rooms");
         }
-
-        // TODO Treat this
-        throw new IllegalArgumentException("User cannot be null to join in rooms");
     }
 
     @Override
@@ -53,14 +49,12 @@ public class RoomServiceImpl implements RoomService {
             Optional<Room> room = this.findRoom(roomId);
 
             if (room.isPresent()) {
-                room.get().addMessage(message);
-
-                roomRepository.save(room.get());
+                roomRepository.newMessage(roomId, message);
+            } else {
+                throw new IllegalArgumentException("This room does not exist");
             }
-
-            throw new IllegalArgumentException("This room does not exist");
+        } else {
+            throw new IllegalArgumentException("Message cannot be null");
         }
-
-        throw new IllegalArgumentException("User cannot be null to join in rooms");
     }
 }

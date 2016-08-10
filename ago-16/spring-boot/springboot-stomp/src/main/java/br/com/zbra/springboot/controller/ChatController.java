@@ -10,13 +10,10 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
-@CrossOrigin(origins = "http://localhost:63342")
 public class ChatController {
 
     @Autowired
@@ -31,13 +28,13 @@ public class ChatController {
     @MessageMapping("/join/{roomId}")
 //    @SendTo("/queue/room/{roomId}")
     public void join(@DestinationVariable("roomId") Long roomId, @Payload User user) {
-        Optional<Room> room = roomService.addUserToRoom(roomId, user);
+        roomService.addUserToRoom(roomId, user);
     }
 
     @MessageMapping("/messages/{roomId}")
     @SendTo("/queue/messages/{roomId}")
-    public void onMessage(@DestinationVariable("roomId") Long roomId,
-                          @Payload Message message) {
+    public Message onMessage(@DestinationVariable("roomId") Long roomId, @Payload Message message) {
         roomService.addMessagesToRoom(roomId, message);
+        return message;
     }
 }
