@@ -27,5 +27,9 @@ namespace Model {
         set email(value:string) {
             this._email = value;
         }
+
+        get gravatarHash():string {
+            return md5(this.email.toLowerCase());
+        }
     }
 }

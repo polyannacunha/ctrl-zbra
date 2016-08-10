@@ -11,6 +11,7 @@ namespace UI.Pages.Home {
     export class HomeController {
         static $inject = ['$scope', '$mdDialog', 'SessionService', 'ChatRoomRepository', 'NotificationMediator'];
 
+        public user:User;
         public rooms:Array<ChatRoom>;
         public selectedRoom:ChatRoom;
 
@@ -24,34 +25,37 @@ namespace UI.Pages.Home {
             $mdDialog
                 .show({
                     template: `
-                    <md-dialog aria-label="Mango (Fruit)"  ng-cloak>
+                    <md-dialog aria-label="Mango (Fruit)"  flex-gt-md="30" flex>
                         <form>
                             <md-toolbar>
                                 <div class="md-toolbar-tools">
-                                    <h2>User Information</h2>
+                                    <h2>Join Chat</h2>
                                     <span flex></span>
                                 </div>
                             </md-toolbar>
-                            <md-dialog-content>
-                                <md-input-container>
-                                    <label>Name</label>
-                                    <input ng-model="dialogCtrl.name">
-                                </md-input-container>
-                                <md-input-container>
-                                    <label>Email</label>
-                                    <input ng-model="dialogCtrl.email">
-                                </md-input-container>
+                            <md-dialog-content layout-padding>
+                                <div layout="column">
+                                    <md-input-container>
+                                        <label>Name</label>
+                                        <input ng-model="dialogCtrl.name">
+                                    </md-input-container>
+                                    <md-input-container>
+                                        <label>Email</label>
+                                        <input ng-model="dialogCtrl.email">
+                                    </md-input-container>
+                                </div>
                             </md-dialog-content>
                             <md-dialog-actions layout="row">
                                 <span flex></span>
-                                <md-button ng-click="dialogCtrl.onSignIn()" md-autofocus>Sign in</md-button>
+                                <md-button class="md-raised" ng-click="dialogCtrl.onSignIn()" md-autofocus>Sign in</md-button>
                             </md-dialog-actions>
                         </form>
                     </md-dialog>
                     `,
                     parent: angular.element(document.body),
                     controllerAs: 'dialogCtrl',
-                    clickOutsideToClose:true,
+                    escapeToClose: false,
+                    clickOutsideToClose: false,
                     controller: class {
                         static $inject = ['$mdDialog'];
 
@@ -70,6 +74,7 @@ namespace UI.Pages.Home {
                     },
                 })
                 .then((user: User) => {
+                    this.user = user;
                     this.sessionService.joinChat(user)
                         .then(() => {
                             this.reloadRooms();
@@ -89,6 +94,9 @@ namespace UI.Pages.Home {
             this.chatRoomRepository.get()
                 .then((rooms) => {
                     this.rooms = rooms;
+                    if (!this.selectedRoom && this.rooms.length >= 1) {
+                        this.selectedRoom = this.rooms[0];
+                    }
                 })
                 .catch(() => {
                     this.notificationMediator.info("Error loading Chat Rooms")

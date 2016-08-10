@@ -6,10 +6,18 @@
             md-disable-backdrop
             md-whiteframe="4">
         <md-toolbar>
-            <h1 class="md-toolbar-tools">ZBRA CHAT</h1>
+            <div class="md-toolbar-tools">
+                <md-list-item class="md-2-line">
+                    <img ng-src="{{ 'https://www.gravatar.com/avatar/' + ctrl.user.gravatarHash + '?d=identicon' }}" class="md-avatar" alt="{{ ctrl.user.name }}" />
+                    <div class="md-list-item-text">
+                        <h3>{{ ctrl.user.name }}</h3>
+                        <p>{{ ctrl.user.email }}</p>
+                    </div>
+                </md-list-item>
+            </div>
         </md-toolbar>
         <md-content layout-padding>
-            <md-list-item ng-repeat="room in ctrl.chatRooms" ng-click="ctrl.onRoomSelected(room)">
+            <md-list-item ng-repeat="room in ctrl.rooms" ng-click="ctrl.onRoomSelected(room)" ng-style="ctrl.selectedRoom == room ? { 'background-color': 'rgba(158,158,158,0.2)' } : {}">
                 <md-icon md-svg-icon="communication:message"></md-icon>
                 <p>{{ room.name }}</p>
             </md-list-item>
@@ -19,7 +27,7 @@
         <md-toolbar>
             <h1 class="md-toolbar-tools">{{ ctrl.selectedRoom.name }}</h1>
         </md-toolbar>
-        <chat-room-window room="ctrl.selectedRoom"></chat-room-window>
+        <chat-room-window room="ctrl.selectedRoom" flex></chat-room-window>
     </div>
 </div>
 

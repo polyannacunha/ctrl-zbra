@@ -6,19 +6,36 @@ namespace UI.Pages.Home {
     import Message = Model.Message;
     import ChatRoom = Model.ChatRoom;
     import NotificationMediator = UI.Mediators.NotificationMediator;
+    import SessionService = Services.SessionService;
 
     export class ChatRoomWindow implements IDirective {
         restrict = 'E';
         scope = true;
         template = `
-            <md-content flex>
+            <md-content flex layout-fill>
                 <loading-overlay visible="chatRoomCtrl.loading">
-                    <md-list-item ng-repeat="message in chatRoomCtrl.messages">
-                        <img ng-src="{{ 'https://www.gravatar.com/avatar/' + message.user.gravatarHash + '?d=identicon' }}" class="md-avatar" alt="{{ message.user.name }}" />
-                        <div class="md-list-item-text">
-                            <p>{{ message.text }}</p>
+                    <div layout="column" layout-fill ng-show="chatRoomCtrl.room">
+                        <div flex layout-padding style="overflow-y: scroll">
+                            <md-list-item class="md-2-line" ng-repeat="message in chatRoomCtrl.messages">
+                                <img ng-src="{{ 'https://www.gravatar.com/avatar/' + message.user.gravatarHash + '?d=identicon' }}" class="md-avatar" alt="{{ message.user.name }}" />
+                                <div class="md-list-item-text">
+                                    <p>{{ message.user.name }}</p>
+                                    <h3><b>{{ message.text }}</b></h3>
+                                </div>
+                            </md-list-item>
                         </div>
-                    </md-list-item>
+                        <div flex-grow style="background-color: rgba(0, 0, 0, .10); padding: 0 15px 0 15px">
+                            <form>
+                                <div layout="row">
+                                    <md-input-container flex style="margin-bottom: 0">
+                                        <label></label>
+                                        <input ng-model="chatRoomCtrl.newMessage" placeholder="message..." autofocus>
+                                    </md-input-container>
+                                    <md-button class="md-primary md-raised" ng-click="chatRoomCtrl.onSendMessage(chatRoomCtrl.newMessage)" type="submit" ng-show="false">Send</md-button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </loading-overlay>
             </md-content>
         `;
@@ -30,19 +47,22 @@ namespace UI.Pages.Home {
     }
 
     class Controller {
-        static $inject = ['$scope', 'MessageRepository', 'NotificationMediator'];
+        static $inject = ['$scope', 'MessageRepository', 'NotificationMediator', 'SessionService'];
 
         private room:ChatRoom;
-        private messages:Message[] = [];
         private loading:boolean;
+        private newMessage:string;
+        private messages:Message[] = [];
 
         constructor(private $scope:IScope,
                     private messageRepository:MessageRepository,
-                    private notificationMediator:NotificationMediator) {
+                    private notificationMediator:NotificationMediator,
+                    private sessionService:SessionService) {
 
             this.messageRepository.addOnMessageUpdatedListener($scope, (message: Message) => {
                 if (message.room.id == this.room.id) {
                     this.messages.push(message);
+                    this.$scope.$apply();
                 }
             });
 
@@ -62,6 +82,11 @@ namespace UI.Pages.Home {
                         this.loading = false;
                     });
             });
+        }
+
+        public onSendMessage() {
+            this.sessionService.sendMessage(this.room, this.newMessage);
+            this.newMessage = '';
         }
     }
 }

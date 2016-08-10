@@ -26,13 +26,13 @@ namespace Services {
 
         public joinChat(user: User): IPromise<any> {
             let deferred = this.$q.defer();
-
+            this.user = user;
             this.$stomp
                 .connect('http://localhost:8080/stomp')
                 .then((frame) => {
 
                     this.$stomp.send(`/zbra-chat/list/rooms`, null,  {});
-                    this.$stomp.subscribe('/queue/rooms', (payload:any) => {
+                    this.$stomp.subscribe('/user/queue/rooms', (payload:any) => {
                         let rooms = payload.map(v => {
                             let room = new ChatRoom();
                             room.id = v.id;
@@ -53,32 +53,16 @@ namespace Services {
                             this.chatRoomRepository.add(room);
 
                             this.$stomp.send(`/zbra-chat/join/${room.id}`, { userName: user.name, email: user.email }, {});
-                            this.$stomp.subscribe(`/queue/room/${room.id}`, (messages:any) => {
-                                if (messages.length > 0) {
-                                    for (let rawMessage of messages) {
-                                        let message = new Message();
-                                        message.text = rawMessage.text;
-                                        message.room = room;
-                                        message.user = new User();
-                                        message.user.id = rawMessage.user.userName;
-                                        message.user.name = rawMessage.user.userName;
-                                        message.user.email = rawMessage.user.email;
-
-                                        this.messageRepository.addMessageToRoom(message);
-                                    }
-                                }
-                            });
-
                             this.$stomp.subscribe(`/queue/messages/${room.id}`, (rawMessage:any) => {
                                 let message = new Message();
                                 message.text = rawMessage.text;
                                 message.room = room;
                                 message.user = new User();
-                                message.user.id = rawMessage.user.username;
-                                message.user.name = rawMessage.user.username;
+                                message.user.id = rawMessage.user.userName;
+                                message.user.name = rawMessage.user.userName;
                                 message.user.email = rawMessage.user.email;
 
-                                this.messageRepository.addMessageToRoom(message);
+                                this.messageRepository.addMessage(message);
                             });
                         }
 
@@ -92,8 +76,8 @@ namespace Services {
             return deferred.promise;
         }
 
-        public sendMessage(roomId: string, text: string) {
-            this.$stomp.send(`/queue/messages/${roomId}`, { user: { username: this.user.id, email: this.user.email }, text: text},  {});
+        public sendMessage(room: ChatRoom, text: string) {
+            this.$stomp.send(`/queue/messages/${room.id}`, { user: { userName: this.user.name, email: this.user.email }, text: text},  {});
         }
     }
 }

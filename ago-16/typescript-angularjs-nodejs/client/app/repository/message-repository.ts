@@ -21,10 +21,13 @@ namespace Repository {
                     private $rootScope:IRootScopeService) {
         }
 
-        public addMessageToRoom(message:Message):IPromise<any> {
+        public addMessage(message:Message):IPromise<any> {
             var deferred = this.$q.defer();
 
             if (message != null) {
+                if (!this.messagesByChatRoom.hasOwnProperty(message.room.id)) {
+                    this.messagesByChatRoom[message.room.id] = [];
+                }
                 this.messagesByChatRoom[message.room.id].push(message);
                 this.$rootScope.$broadcast(MessageRepository.onMessagesUpdatedEvent, message);
                 deferred.resolve();
@@ -39,7 +42,7 @@ namespace Repository {
             var deferred = this.$q.defer<Message[]>();
 
             if (roomId != null) {
-                deferred.resolve(this.messagesByChatRoom[roomId]);
+                deferred.resolve(this.messagesByChatRoom[roomId] || []);
             } else {
                 deferred.reject("Room cannot be null")
             }
