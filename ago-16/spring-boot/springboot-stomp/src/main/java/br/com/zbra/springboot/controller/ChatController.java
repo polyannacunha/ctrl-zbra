@@ -29,15 +29,9 @@ public class ChatController {
     }
 
     @MessageMapping("/join/{roomId}")
-    @SendTo("/queue/room/{roomId}")
-    public Room join(@DestinationVariable("roomId") Long roomId, @Payload User user) {
+//    @SendTo("/queue/room/{roomId}")
+    public void join(@DestinationVariable("roomId") Long roomId, @Payload User user) {
         Optional<Room> room = roomService.addUserToRoom(roomId, user);
-
-        if (room.isPresent()) {
-            return room.get();
-        }
-
-        return null;
     }
 
     @MessageMapping("/messages/{roomId}")
