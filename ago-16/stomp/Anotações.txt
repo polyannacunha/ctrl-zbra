@@ -1,0 +1,257 @@
+BASIC ON STOMP
+*****************************
+
+- STOMP é a sigla para Simple (or Streaming) Text Orientated Messaging Protocol
+- versão 1.2 atualmente
+- é um protocolo de mensageria assíncrona baseado em texto que adota o wire protocol
+
+		obs: wire protocol = 
+			In a network, it is the mechanism for transmitting data from point a to point b
+			A wire protocol provides the means for interoperation of one or more applications in a network.
+
+- ou seja, ele é um protocolo para transmitir dados de um ponto a outro, que provê interoperabilidade de uma ou mais aplicações em uma rede
+- O STOMP é Language Agnostic, capaz de trocar mensagens com qualquer message broker que suporta o protocolo, independente da linguagem em que é implementado.
+- As mensagens transmitidas são, por default, codificadas usando UTF-8, porem, o protocolo suporta o uso de outras codificações, como o binário
+- o STOMP é stream based, isso significa que os frames serão recebidos na ordem em que foram enviados("irei explicar o que são frames mais a frente")
+- Uma das filosofias adotadas ao criar o protocolo STOMP foi a de que ele deveria ser simples e interoperável. Ele não tem muitos "constraints" e portanto deixa em aberto muitas decisões de implementação.
+- Apesar de não prover uma API muito completa. Ele é simples de ser implementado tanto no cliente como no servidor. 
+
+*****************************
+
+WHY USE STOMP
+*****************************
+- muito similar ao HTTP, fácil de entender os conceitos básicos e sem necessidade de entender os detalhes para utilizar
+- independente de linguagem, pode integrar diferentes linguagens contanto que o protocolo seja compatível
+- features limitadas, estou listando isto como um motivo para usar STOMP, mas também pode ser interpretado como um motivo para não utilizar STOMP, a vantagem que o STOMP trás ao ter menos features é a simplicidade e facilidade de uso, porém isso obviamente trás uma limitação do que ele pode fazer.
+
+- outros protocolos interessantes caso STOMP não seja ideal é o AMQP(Advanced Message Queueing protocol) e MQTT(Message Queue Telemetry Transport)
+- AMQP  sendo útil quando se quer uma mensageria mais robusta, com melhores métodos e maior volume de dados
+	obs:Companies like JP Morgan use it to process 1 billion messages a day.
+	It is used in one of the world’s largest biometric databases India’s Aadhar project—home to 1.2 billion identities.
+	It is used in the Ocean Observatories Initiative—an architecture that collects 8 terabytes of data per day.
+- MQTT sendo um protocolo que tem um footprint bem baixo, gastando pouca bateria e tendo baixo impacto no bandwidth, o que faz com que ele seja ideal para mobiles ou outros aplicativos no estilo internet das coisas. Sua API é simplista como a do STOMP.
+
+- enquanto pesquisava sobre estes protocolos encontrei várias pessoas recomendando o RabbitMQ, RabbitMQ é um message broker que consegue interpretar HTTP, STOMP, AMQP e MQTT e responder com qualquer um destes protocolos, fazendo com que um servidor tenha capacidade de se comunicar com protocolos diferentes dependendo da necessidade. Então é possível utilizar MQTT em mobiles para garantir pouco impacto nestes enquanto ao mesmo tempo utilizando AMQP para se comunicar com outros serviços garantindo boa performance em requisições pesadas.
+
+*****************************
+
+COMMUNICATION
+*****************************
+
+- um STOMP server deve ser modelado de modo a ter um conjunto de desinatários para qual as mensagens são enviadas.
+- o STOMP client atua de duas maneiras
+- como produtor, mandando mensagens ao servidor atravéz do "frame" SEND
+- ou como consumidor, enviando um "frame" SUBSCRIBE ao servidor, passando uma destinação para as mensagens, e recebendo mensagens do servidor pelo "frame" MESSAGE
+
+*****************************
+		
+FRAME BASED PROTOCOL
+*****************************
+Frames
+- O STOMP transmite "Frames". E seus frames são modelados de modo a ser parecido ao HTTP.
+		obs: A frame is a digital data transmission unit in computer networking and telecommunication.
+- Exemplo de frame, o command é enviado(ex: SEND, SUBSCRIBE...)
+- seguido pelo header no formato chave:valor, 1 por linha
+- após o header é necessária uma linha extra para sinalizar o fim do header.
+- e finalmente o body que deve terminar em um NULL octet, neste caso ^@, como null octet em ascii(o body é presente apenas nos frames, SEND, MESSAGE e ERROR)
+
+COMMAND
+header1:value1
+header2:value2
+
+Body^@
+
+*****************************
+
+HEADER
+*****************************
+
+- header repetidos: O primeiro deve ser considerado e os outros serão ignorados. 
+ex:
+
+MESSAGE
+foo:World
+foo:Hello
+
+^@
+
+content-length
+- todos os frames podem conter o content-length
+- octet count(byte count)
+- não obrigatório, mas frames como SEND, MESSAGE e ERROR devem conter para facilitar o parse
+- o content-length não ira fazer com que o parser pare antes de encontrar o NULL octet e o NULL octet ainda deve ser utilizado
+
+content-type
+- recomendado caso o frame contenha um body(SEND, MESSAGE, ERROR) para facilitar o receptor do frame
+- deve ser um MIME type(media type), caso não encontrado é recomendado que o body seja tratado como binário
+- ex: content-type=text/html;charset=utf-16
+- os servidores e clients STOMP são obrigados a supportar UTF-8 , portanto é recomendado que texto utilize UTF-8
+
+receipt
+- todos frames menos CONNECT podem utilizar o receipt com um valor arbitrário
+- enviar um receipt para o servidor fará com que o servidor envie um RECEIPT frame para o client após o frame ser processado com sucesso
+
+
+CONNECTION
+*****************************
+
+- iniciada pelo client utilizando o frame CONNECT
+- servidor responde com o frame CONNECTED caso a conexão seja aceitada
+- caso a conexão seja rejeitada o servidor deve, mas não é obrigado, a responder com um frame ERROR explicando o motivo
+
+*****************************
+
+THE CONNECT AND STOMP FRAMES
+*****************************
+
+- nas versões pré 1.2, os clientes utilizavam o comando CONNECT para conectar ao servidor
+- na versão 1.2(a atual) foi adicionado o frame STOMP, CONNECT continua funcionando na versão atual por razões de compatibilidade
+- o frame STOMP é tratado da mesma maneira que o CONNECT frame pelo servidor e é utilizado para facilitar a distinção entre HTTP e STOMP
+
+*****************************
+
+
+
+CONNECT AND STOMP FRAMES
+*****************************
+
+accept-version
+- obrigatório
+- a partir de stomp 1.1, serve para protocol negotiation
+- o cliente avisa para o server qual as versões de STOMP que ele suporta, o servidor responde com o CONNECTED frame passando a maior versão compatível como parâmetro, se não há versão compatível, o servidor responde com um ERROR frame
+se não
+- se omitido, o servidor deve assumir que a versão é 1.0
+
+host
+- obrigatório
+- nome do host em que o cliente deseja se conectar, o servidor pode escolher recusar a conexão se o nome do host não fizer parte dos host conhecidos
+
+login e passcode
+- opcional
+
+heart-beat
+-(mais a frente)
+
+*****************************
+
+CONNECTED FRAME
+*****************************
+
+version
+- resposta do accept-version frame do CONNECT
+
+session
+- opcional
+- id da session
+
+server
+- informações sobre o servidor
+- se presente deve conter um campo name e pode ser seguido por um comentário
+formato:
+server = name ["/" version] *(comment)
+ex:
+server:Apache/1.3.9*(apache server)
+
+*****************************
+
+
+HEART BEATING HEADER
+*****************************
+- opcional
+heart-beat
+ex:
+heart-beat:<cx>,<cy>
+
+- dois números separados por virgula significando o período de tempo em milisegundos entre heart beats
+- o primeiro número significa o numero de que o cliente pode fazer(máximo)
+- o segundo número significa o que o cliente gostaria de fazer
+- zero no primeiro significa que o cliente não pode fazer heart beating, zero no segundo significa que o cliente não quer receber heart beats
+- opcional, mas será tratado como 0,0 caso não presente
+- o servidor irá responder com heartbeat no CONNECTED frame
+- o heartbeat entre o cliente e o servidor(excluindo zero, sem heartbeat) é decidido a partir do maior número entre máximo do cliente e o ideal do servidor, e vice versa para o servidor para o cliente
+- qualquer frame serve como heart-beat e reseta o timeout
+
+*****************************
+
+
+CLIENT FRAMES
+*****************************
+
+SEND
+- o send frame envia uma mensagem ao destinatário, ele tem um header obrigatório, o destination
+- suporta transactions através do transaction header, o seu parâmetro é o nome da transação
+- qualquer header criado pelo usuário pode ser adicionado a este frame
+- se o send não for processado pelo servidor. o servidor deve mandar um ERROR frame ao cliente e fechar a conexão
+
+SUBSCRIBE
+- o SUBSCRIBE frame é usado para criar um listener para eventos vindos de um certo destino
+- portanto, o header destination é obrigatório, tanto quanto o id header, cada subscription deve passar um id unico para o servidor
+- todas as mensagens recebidas por este listener serão do tipo MESSAGE frame
+- seguindo o que vimos até este ponto, o servidor irá enviar um ERROR frame caso não seja possível criar a subscription
+- o frame também possui um ack header com três valores validos, auto, client ou client-individual, o auto sendo o default
+- o modo auto significa que o servidor irá assumir que o cliente recebeu as mensagens e não irá esperar um ACK
+- o modo client significa que o cliente deve enviar ACK frames para o servidor para as mensagens processadas.
+- os acks funcionam cumulativamente, o servidor assume que após qualquer ack recebido, o cliente recebeu todas as mensagens anteriores aquele ack
+- o cliente deve enviar NACK frames se não conseguir consumir mensagens
+- o modo client individual funciona da mesma maneira que o client com a diferença que um ACK recebido pelo servidor não fará com que ele assuma que o cliente recebeu todas as mensagens anteriores a essa
+
+
+UNSUBSCRIBE
+- o frame unsubscribe tem no header apenas o id da subscription que quer remover, não é necessário a destination já que múltiplas subscriptions podem ser feitas ao mesmo destinatário
+
+ACK
+- os frames ACK tem no seu header o id da MESSAGE sendo reconhecida
+- ele também pode ter o header transaction
+NACK
+- oposto do ACK tem os mesmos headers
+- o servidor pode tratar um NACK como bem entender, seu comportamento não é definido no protocolo
+- o seu modo de operação tambem respeita as mesmas condições do ACK em relação ao ack header(auto, client, client-individual)
+
+DISCONNECT
+- o DISCONNECT frame serve para fechar a conexão garantindo que o servidor recebeu todas as mensagens
+- o cliente irá mandar ao servidor um DISCONNECT frame com apenas um header receipt, o cliente irá então esperar até o servidor responder com um receipt para fechar a conexão
+- o cliente não deve mandar mais nenhum frame após o disconnect
+
+*****************************
+
+
+TRANSACTION FRAMES
+*****************************
+
+BEGIN
+- significa o inicio de uma transação, qualquer mensagem ou ACK/NACK recebidos durante uma transação serão processados atomicamente
+- contem apenas o nome da transação e deve ser usado em frames SEND, COMMIT, ABORT, ACK e NACK para designa-los a uma transação
+- qualquer transação que não for comitada será abortada caso haja um frame DISCONNECT ou se a conexão falhar
+
+COMMIT e ABORT
+- os frames abort e commit ambos apenas tem o nome da transação como parametro ao header transaction
+
+*****************************
+
+SERVER FRAMES
+*****************************
+
+MESSAGE
+- message frames são enviados para os subscriptions do cliente
+- os message frames tem um header destination para onde a mensagem será enviada
+- eles também tem um header message-id com um valor unico e um subscription header com o id da subscription para qual a message esta sendo enviada.
+- se a mensagem necessitar e ACK ou NACK então o servidor deve enviar um header ack com um valor arbitrario para o cliente, o cliente então enviará um ACK ou NACK com este mesmo valor de volta
+- o message frame contem content-length e content-type se houver um body
+
+RECEIPT
+
+- o receipt frame é uma resposta a frames com o header receipt,
+- ele contêm um header receipt-id, igual ao valor enviado no receipt header do frame enviado pelo cliente
+- o receipt frame significa que o frame enviado ao servidor terminou de ser processado
+- o envio desta mensagem do servidor significa que todos of frames anteriores a este foram recebidos(mas talvez não processados)
+
+ERROR
+- o servidor pode mandar ERROR frames se algo errado ocorrer
+- a conexão sempre deve ser fechada após um o envio de um ERROR frame ao cliente
+- o frame error deve conter um header message com uma descrição curta do erro e pode conter um body com mais detalhes
+- apesar de não necessário, é recomendado que o servidor adicione dados no header para que se facilite a identificação de qual o frame enviado pelo cliente que causou o erro
+- os frames de erro devem conter o content-length e content-type caso haja um body
+
+*****************************
+
+
